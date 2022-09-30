@@ -1,5 +1,5 @@
+require_relative "ttyhue/term_color"
 require_relative "ttyhue/parser"
-require_relative "ttyhue/colorizer"
 require_relative "ttyhue/preview"
 
 module TTYHue

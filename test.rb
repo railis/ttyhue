@@ -1,5 +1,3 @@
 require_relative "lib/ttyhue"
 
-#puts TTYHue.("I'm a {red}red{/red}. I'm a {c213}blue{/c213}")
-
-TTYHue.preview_guicolors
+puts "Im {red} and I'm \{/red} also {c123 sadsa} asdsa".scan(/\\/).inspect

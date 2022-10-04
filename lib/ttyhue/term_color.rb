@@ -20,6 +20,10 @@ module TTYHue
       defs.select {|d| d.tag_name == tag_name}.first
     end
 
+    def self.by_name(name)
+      defs.select {|d| d.color_name == name}.first
+    end
+
     class Base
 
       def inspect
@@ -43,6 +47,15 @@ module TTYHue
         [('l' if @light), @label].compact.join
       end
 
+      def term_hex(bg)
+        color_index = TermColor::LABELS.index(@label)
+        if @light
+          bg ? "10#{color_index}" : "9#{color_index}"
+        else
+          bg ? "4#{color_index}" : "3#{color_index}"
+        end
+      end
+
     end
 
     class Gui < Base
@@ -57,6 +70,11 @@ module TTYHue
 
       def tag_name
         "gui#{@code.to_s}"
+      end
+
+      def term_hex(bg)
+        prefix = bg ? "48;5;" : "38;5;"
+        prefix + @code.to_s
       end
 
     end

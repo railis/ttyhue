@@ -298,60 +298,41 @@ describe TTYHue::Parser do
 
   end
 
-  #context "errors" do
+  context "unclosed tags" do
 
-  #  should "raise error when unknown tag opening is used" do
-  #    assert_parse_error(
-  #      "Color {unknown}color{unknown}",
-  #      "Unexpected string 'unknown' after `{`. Expecting color value. String: 'Color {(+)unknown}color{unknown}'"
-  #    )
-  #  end
+    should "work with unclosed tags" do
+      assert_parsed(
+        "This is {blue}blue",
+        [
+          {fg: :default, bg: :default, str: "This is "},
+          {fg: :blue, bg: :default, str: "blue"}
+        ]
+      )
+    end
 
-  #  should "raise error when unknown tag opening starting with correct color is used" do
-  #    assert_parse_error(
-  #      "Color {redsomethin021g}color{/red}",
-  #      "Unexpected string 'somethin021g' after color:red. Expecting '}'. String: 'Color {red(+)somethin021g}color{/red}'"
-  #    )
-  #  end
+    should "ignore alone closing tags" do
+      assert_parsed(
+        "This is {/red}red",
+        [
+          {fg: :default, bg: :default, str: "This is "},
+          {fg: :default, bg: :default, str: "red"}
+        ]
+      )
+    end
 
-  #  should "raise error when unknown tag closing is used" do
-  #    assert_parse_error(
-  #      "Color {blue}color{/unknown}",
-  #      "Unexpected string 'unknown' after `{/`. Expecting color:blue. String: 'Color {blue}color{/(+)unknown}'"
-  #    )
-  #  end
+    should "remember the color when multiple tags are overflowing" do
+      assert_parsed(
+        "{blue}Overflowing blue {red}now red with {green}some green{/red} and green{/green} and blue",
+        [
+          {fg: :blue, bg: :default, str: "Overflowing blue "},
+          {fg: :red, bg: :default, str: "now red with "},
+          {fg: :green, bg: :default, str: "some green"},
+          {fg: :green, bg: :default, str: " and green"},
+          {fg: :blue, bg: :default, str: " and blue"}
+        ]
+      )
+    end
 
-  #  should "raise error when incorrect color tag is closed" do
-  #    assert_parse_error(
-  #      "Color {red}color {blue} blue{/red}",
-  #      "Unexpected color:red tag closing. Expected color:blue String: '...or {red}color {blue} blue{/red(+)}'"
-  #    )
-  #  end
-
-  #  should "raise error when incorrect custom color tag is closed" do
-  #    assert_parse_error(
-  #      "Color {c12}color {c134} blue{/c12}",
-  #      "Unexpected color:12 tag closing. Expected color:134 String: '...or {c12}color {c134} blue{/c12(+)}'"
-  #    )
-  #  end
-
-  #  should "truncate string preview in longer strings" do
-  #    str = <<~EOS
-  #      Lorem ipsum dolor sit amoent
-  #      Lorem ipsum dolor sit amoent
-  #      Lorem ipsum dolor sit amoent
-  #      Color {unknown}color{unknown}
-  #      Lorem ipsum dolor sit amoent
-  #      Lorem ipsum dolor sit amoent
-  #      Lorem ipsum dolor sit amoent
-  #    EOS
-  #    assert_parse_error(
-  #      str,
-  #      "Unexpected string 'unknown' after `{`. Expecting color value. String: '...ipsum dolor sit amoent Color {(+)unknown}color{unknown} Lorem...'"
-  #    )
-  #  end
-
-  #end
-
+  end
 
 end

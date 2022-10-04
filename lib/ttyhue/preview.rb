@@ -8,7 +8,7 @@ module TTYHue
           ['', 'b'].each do |bg|
             ['', 'l'].each do |l|
               tag_name = "#{bg}#{l}#{c}"
-              print TTYHue.("  {#{tag_name}}  #{tag_name.ljust(12)}{/#{tag_name}}")
+              print TTYHue.c("  {#{tag_name}}  #{tag_name.ljust(12)}{/#{tag_name}}")
             end
           end
           print "\n"
@@ -18,8 +18,8 @@ module TTYHue
       def preview_guicolors
         (1..256).each do |x|
           num = x - 1
-          tag_name = "c#{num}"
-          print TTYHue.(" {#{tag_name}}#{num.to_s.ljust(3)}{/#{tag_name}}")
+          tag_name = "gui#{num}"
+          print TTYHue.c(" {#{tag_name}}#{num.to_s.ljust(3)}{/#{tag_name}}")
           print "\n" if x % 16 == 0
         end
       end

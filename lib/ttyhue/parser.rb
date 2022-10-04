@@ -1,27 +1,11 @@
 require 'strscan'
+require_relative "parser/tag"
+require_relative "parser/color_stack"
 
 module TTYHue
   class Parser
 
     class Tag
-
-      def self.regexp
-        /{(?<closing>\/?)(?<bg>b?)(?<name>#{TermColor.defs.map(&:tag_name).join("|")})}/
-      end
-
-      def self.valid?(str)
-        !!str.match(regexp)
-      end
-
-      attr_reader :color_name, :closing, :bg
-
-      def initialize(str)
-        match_data = str.match(self.class.regexp)
-        tag_name = match_data[:name]
-        @bg = match_data[:bg] != ""
-        @closing = match_data[:closing] != ""
-        @color_name = TermColor.by_tag(tag_name).color_name
-      end
 
     end
 
@@ -34,11 +18,10 @@ module TTYHue
 
     def initialize(string)
       @string = string
-      @bg_color_stack = []
-      @fg_color_stack = []
     end
 
     def parse
+      @color_stack = ColorStack.new
       @result = []
       scanner = StringScanner.new(@string)
       until scanner.eos?
@@ -54,8 +37,8 @@ module TTYHue
       return false unless str
 
       @result << {
-        fg: @fg_color_stack.first || :default,
-        bg: @bg_color_stack.first || :default,
+        fg: @color_stack.top(bg: false) || :default,
+        bg: @color_stack.top(bg: true) || :default,
         str: str
       }
     end
@@ -66,17 +49,13 @@ module TTYHue
       if Tag.valid?(str)
         tag = Tag.new(str)
         if tag.closing
-          color_stack(tag.bg).shift
+          @color_stack.pop(tag.color_name, bg: tag.bg)
         else
-          color_stack(tag.bg).unshift(tag.color_name)
+          @color_stack.push(tag.color_name, bg: tag.bg)
         end
       else
         handle_content!(str)
       end
-    end
-
-    def color_stack(bg)
-      bg ? @bg_color_stack : @fg_color_stack
     end
 
   end

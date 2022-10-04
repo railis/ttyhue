@@ -5,6 +5,18 @@ require_relative "ttyhue/preview"
 
 module TTYHue
 
+  def self.global_style
+    begin
+      @@styles.to_h
+    rescue NameError
+      {}
+    end
+  end
+
+  def self.set_style(hash)
+    @@styles = hash.to_h
+  end
+
   def self.c(str)
     TTYHue::Colorizer.colorize(str)
   end

@@ -2,24 +2,23 @@ module TTYHue
   class Parser
     class Tag
 
-      def self.regexp
-        /{(?<closing>\/?)(?<bg>b?)(?<name>#{TermColor.defs.map(&:tag_name).join("|")})}/
-      end
-
-      def self.valid?(str)
-        !!str.match(regexp)
-      end
-
-      attr_reader :color_name, :closing, :bg
-
       def initialize(str)
-        match_data = str.match(self.class.regexp)
-        tag_name = match_data[:name]
-        @bg = match_data[:bg] != ""
-        @closing = match_data[:closing] != ""
-        @color_name = TermColor.by_tag(tag_name).color_name
+        @str = str
+        @match_data = str.match(regexp)
+        return unless @match_data
+      end
+
+      def valid?
+        !!@match_data
+      end
+
+      def closing
+        @match_data[:closing] != ""
       end
 
     end
   end
 end
+
+require_relative "color_tag"
+require_relative "style_tag"

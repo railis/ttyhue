@@ -1,14 +1,8 @@
 require_relative "../test_helper.rb"
 
-def assert_parsed(str, expected)
-  assert_equal expected, TTYHue::Parser.new(str).parse
-end
-
-def assert_parse_error(str, message)
-  err = assert_raises TTYHue::Parser::ParseError do
-    TTYHue::Parser.new(str).parse
-  end
-  assert_equal message, err.message
+def assert_parsed(str, expected, opts = {})
+  assert_equal expected, TTYHue::Parser.new(str, opts).parse
+  TTYHue.set_style(nil)
 end
 
 describe TTYHue::Parser::Tag do
@@ -18,24 +12,24 @@ describe TTYHue::Parser::Tag do
     context "foreground" do
 
       should "allow theme colors" do
-        assert_equal true, TTYHue::Parser::Tag.valid?("{red}")
-        assert_equal true, TTYHue::Parser::Tag.valid?("{/red}")
+        assert_equal true, TTYHue::Parser::ColorTag.new("{red}").valid?
+        assert_equal true, TTYHue::Parser::ColorTag.new("{/red}").valid?
       end
 
       should "allow light theme colors" do
-        assert_equal true, TTYHue::Parser::Tag.valid?("{lred}")
-        assert_equal true, TTYHue::Parser::Tag.valid?("{/lred}")
+        assert_equal true, TTYHue::Parser::ColorTag.new("{lred}").valid?
+        assert_equal true, TTYHue::Parser::ColorTag.new("{/lred}").valid?
       end
 
       should "allow gui codes from 0 to 255" do
-        assert_equal true, TTYHue::Parser::Tag.valid?("{gui0}")
-        assert_equal true, TTYHue::Parser::Tag.valid?("{gui12}")
-        assert_equal true, TTYHue::Parser::Tag.valid?("{gui125}")
-        assert_equal true, TTYHue::Parser::Tag.valid?("{gui255}")
-        assert_equal true, TTYHue::Parser::Tag.valid?("{/gui0}")
-        assert_equal true, TTYHue::Parser::Tag.valid?("{/gui12}")
-        assert_equal true, TTYHue::Parser::Tag.valid?("{/gui125}")
-        assert_equal true, TTYHue::Parser::Tag.valid?("{/gui255}")
+        assert_equal true, TTYHue::Parser::ColorTag.new("{gui0}").valid?
+        assert_equal true, TTYHue::Parser::ColorTag.new("{gui12}").valid?
+        assert_equal true, TTYHue::Parser::ColorTag.new("{gui125}").valid?
+        assert_equal true, TTYHue::Parser::ColorTag.new("{gui255}").valid?
+        assert_equal true, TTYHue::Parser::ColorTag.new("{/gui0}").valid?
+        assert_equal true, TTYHue::Parser::ColorTag.new("{/gui12}").valid?
+        assert_equal true, TTYHue::Parser::ColorTag.new("{/gui125}").valid?
+        assert_equal true, TTYHue::Parser::ColorTag.new("{/gui255}").valid?
       end
 
     end
@@ -43,24 +37,24 @@ describe TTYHue::Parser::Tag do
     context "background" do
 
       should "allow theme colors" do
-        assert_equal true, TTYHue::Parser::Tag.valid?("{bred}")
-        assert_equal true, TTYHue::Parser::Tag.valid?("{/red}")
+        assert_equal true, TTYHue::Parser::ColorTag.new("{bred}").valid?
+        assert_equal true, TTYHue::Parser::ColorTag.new("{/red}").valid?
       end
 
       should "allow light theme colors" do
-        assert_equal true, TTYHue::Parser::Tag.valid?("{blred}")
-        assert_equal true, TTYHue::Parser::Tag.valid?("{/blred}")
+        assert_equal true, TTYHue::Parser::ColorTag.new("{blred}").valid?
+        assert_equal true, TTYHue::Parser::ColorTag.new("{/blred}").valid?
       end
 
       should "allow gui codes from 0 to 255" do
-        assert_equal true, TTYHue::Parser::Tag.valid?("{bgui0}")
-        assert_equal true, TTYHue::Parser::Tag.valid?("{bgui12}")
-        assert_equal true, TTYHue::Parser::Tag.valid?("{bgui125}")
-        assert_equal true, TTYHue::Parser::Tag.valid?("{bgui255}")
-        assert_equal true, TTYHue::Parser::Tag.valid?("{/bgui0}")
-        assert_equal true, TTYHue::Parser::Tag.valid?("{/bgui12}")
-        assert_equal true, TTYHue::Parser::Tag.valid?("{/bgui125}")
-        assert_equal true, TTYHue::Parser::Tag.valid?("{/bgui255}")
+        assert_equal true, TTYHue::Parser::ColorTag.new("{bgui0}").valid?
+        assert_equal true, TTYHue::Parser::ColorTag.new("{bgui12}").valid?
+        assert_equal true, TTYHue::Parser::ColorTag.new("{bgui125}").valid?
+        assert_equal true, TTYHue::Parser::ColorTag.new("{bgui255}").valid?
+        assert_equal true, TTYHue::Parser::ColorTag.new("{/bgui0}").valid?
+        assert_equal true, TTYHue::Parser::ColorTag.new("{/bgui12}").valid?
+        assert_equal true, TTYHue::Parser::ColorTag.new("{/bgui125}").valid?
+        assert_equal true, TTYHue::Parser::ColorTag.new("{/bgui255}").valid?
       end
 
     end
@@ -68,25 +62,25 @@ describe TTYHue::Parser::Tag do
     context "invalid values" do
 
       should "not allow undefined labels" do
-        assert_equal false, TTYHue::Parser::Tag.valid?("{unknown}")
-        assert_equal false, TTYHue::Parser::Tag.valid?("{/unknown}")
-        assert_equal false, TTYHue::Parser::Tag.valid?("{unknown with other stuff}")
-        assert_equal false, TTYHue::Parser::Tag.valid?("{/unknown with other stuff}")
+        assert_equal false, TTYHue::Parser::ColorTag.new("{unknown}").valid?
+        assert_equal false, TTYHue::Parser::ColorTag.new("{/unknown}").valid?
+        assert_equal false, TTYHue::Parser::ColorTag.new("{unknown with other stuff}").valid?
+        assert_equal false, TTYHue::Parser::ColorTag.new("{/unknown with other stuff}").valid?
       end
 
       should "not allow invalid color codes" do
-        assert_equal false, TTYHue::Parser::Tag.valid?("{gui-1}")
-        assert_equal false, TTYHue::Parser::Tag.valid?("{gui256}")
-        assert_equal false, TTYHue::Parser::Tag.valid?("{gui1233}")
-        assert_equal false, TTYHue::Parser::Tag.valid?("{bgui-1}")
-        assert_equal false, TTYHue::Parser::Tag.valid?("{bgui256}")
-        assert_equal false, TTYHue::Parser::Tag.valid?("{bgui1233}")
-        assert_equal false, TTYHue::Parser::Tag.valid?("{/gui-1}")
-        assert_equal false, TTYHue::Parser::Tag.valid?("{/gui256}")
-        assert_equal false, TTYHue::Parser::Tag.valid?("{/gui1233}")
-        assert_equal false, TTYHue::Parser::Tag.valid?("{/bgui-1}")
-        assert_equal false, TTYHue::Parser::Tag.valid?("{/bgui256}")
-        assert_equal false, TTYHue::Parser::Tag.valid?("{/bgui1233}")
+        assert_equal false, TTYHue::Parser::ColorTag.new("{gui-1}").valid?
+        assert_equal false, TTYHue::Parser::ColorTag.new("{gui256}").valid?
+        assert_equal false, TTYHue::Parser::ColorTag.new("{gui1233}").valid?
+        assert_equal false, TTYHue::Parser::ColorTag.new("{bgui-1}").valid?
+        assert_equal false, TTYHue::Parser::ColorTag.new("{bgui256}").valid?
+        assert_equal false, TTYHue::Parser::ColorTag.new("{bgui1233}").valid?
+        assert_equal false, TTYHue::Parser::ColorTag.new("{/gui-1}").valid?
+        assert_equal false, TTYHue::Parser::ColorTag.new("{/gui256}").valid?
+        assert_equal false, TTYHue::Parser::ColorTag.new("{/gui1233}").valid?
+        assert_equal false, TTYHue::Parser::ColorTag.new("{/bgui-1}").valid?
+        assert_equal false, TTYHue::Parser::ColorTag.new("{/bgui256}").valid?
+        assert_equal false, TTYHue::Parser::ColorTag.new("{/bgui1233}").valid?
       end
 
     end
@@ -98,30 +92,30 @@ describe TTYHue::Parser::Tag do
     context "foreground" do
 
       should "resolve base theme colors" do
-        assert_equal :red, TTYHue::Parser::Tag.new("{red}").color_name
-        assert_equal false, TTYHue::Parser::Tag.new("{red}").closing
-        assert_equal false, TTYHue::Parser::Tag.new("{red}").bg
-        assert_equal :red, TTYHue::Parser::Tag.new("{/red}").color_name
-        assert_equal true, TTYHue::Parser::Tag.new("{/red}").closing
-        assert_equal false, TTYHue::Parser::Tag.new("{/red}").bg
+        assert_equal :red, TTYHue::Parser::ColorTag.new("{red}").color_name
+        assert_equal false, TTYHue::Parser::ColorTag.new("{red}").closing
+        assert_equal false, TTYHue::Parser::ColorTag.new("{red}").bg
+        assert_equal :red, TTYHue::Parser::ColorTag.new("{/red}").color_name
+        assert_equal true, TTYHue::Parser::ColorTag.new("{/red}").closing
+        assert_equal false, TTYHue::Parser::ColorTag.new("{/red}").bg
       end
 
       should "resolve light theme colors" do
-        assert_equal :light_red, TTYHue::Parser::Tag.new("{lred}").color_name
-        assert_equal false, TTYHue::Parser::Tag.new("{lred}").closing
-        assert_equal false, TTYHue::Parser::Tag.new("{lred}").bg
-        assert_equal :light_red, TTYHue::Parser::Tag.new("{/lred}").color_name
-        assert_equal true, TTYHue::Parser::Tag.new("{/lred}").closing
-        assert_equal false, TTYHue::Parser::Tag.new("{/lred}").bg
+        assert_equal :light_red, TTYHue::Parser::ColorTag.new("{lred}").color_name
+        assert_equal false, TTYHue::Parser::ColorTag.new("{lred}").closing
+        assert_equal false, TTYHue::Parser::ColorTag.new("{lred}").bg
+        assert_equal :light_red, TTYHue::Parser::ColorTag.new("{/lred}").color_name
+        assert_equal true, TTYHue::Parser::ColorTag.new("{/lred}").closing
+        assert_equal false, TTYHue::Parser::ColorTag.new("{/lred}").bg
       end
 
       should "resolve gui colors" do
-        assert_equal :gui_123, TTYHue::Parser::Tag.new("{gui123}").color_name
-        assert_equal false, TTYHue::Parser::Tag.new("{gui123}").closing
-        assert_equal false, TTYHue::Parser::Tag.new("{gui123}").bg
-        assert_equal :gui_123, TTYHue::Parser::Tag.new("{/gui123}").color_name
-        assert_equal true, TTYHue::Parser::Tag.new("{/gui123}").closing
-        assert_equal false, TTYHue::Parser::Tag.new("{/gui123}").bg
+        assert_equal :gui_123, TTYHue::Parser::ColorTag.new("{gui123}").color_name
+        assert_equal false, TTYHue::Parser::ColorTag.new("{gui123}").closing
+        assert_equal false, TTYHue::Parser::ColorTag.new("{gui123}").bg
+        assert_equal :gui_123, TTYHue::Parser::ColorTag.new("{/gui123}").color_name
+        assert_equal true, TTYHue::Parser::ColorTag.new("{/gui123}").closing
+        assert_equal false, TTYHue::Parser::ColorTag.new("{/gui123}").bg
       end
 
     end
@@ -129,30 +123,30 @@ describe TTYHue::Parser::Tag do
     context "background" do
 
       should "resolve base theme colors" do
-        assert_equal :red, TTYHue::Parser::Tag.new("{bred}").color_name
-        assert_equal false, TTYHue::Parser::Tag.new("{bred}").closing
-        assert_equal true, TTYHue::Parser::Tag.new("{bred}").bg
-        assert_equal :red, TTYHue::Parser::Tag.new("{/bred}").color_name
-        assert_equal true, TTYHue::Parser::Tag.new("{/bred}").closing
-        assert_equal true, TTYHue::Parser::Tag.new("{/bred}").bg
+        assert_equal :red, TTYHue::Parser::ColorTag.new("{bred}").color_name
+        assert_equal false, TTYHue::Parser::ColorTag.new("{bred}").closing
+        assert_equal true, TTYHue::Parser::ColorTag.new("{bred}").bg
+        assert_equal :red, TTYHue::Parser::ColorTag.new("{/bred}").color_name
+        assert_equal true, TTYHue::Parser::ColorTag.new("{/bred}").closing
+        assert_equal true, TTYHue::Parser::ColorTag.new("{/bred}").bg
       end
 
       should "resolve light theme colors" do
-        assert_equal :light_red, TTYHue::Parser::Tag.new("{blred}").color_name
-        assert_equal false, TTYHue::Parser::Tag.new("{blred}").closing
-        assert_equal true, TTYHue::Parser::Tag.new("{blred}").bg
-        assert_equal :light_red, TTYHue::Parser::Tag.new("{/blred}").color_name
-        assert_equal true, TTYHue::Parser::Tag.new("{/blred}").closing
-        assert_equal true, TTYHue::Parser::Tag.new("{/blred}").bg
+        assert_equal :light_red, TTYHue::Parser::ColorTag.new("{blred}").color_name
+        assert_equal false, TTYHue::Parser::ColorTag.new("{blred}").closing
+        assert_equal true, TTYHue::Parser::ColorTag.new("{blred}").bg
+        assert_equal :light_red, TTYHue::Parser::ColorTag.new("{/blred}").color_name
+        assert_equal true, TTYHue::Parser::ColorTag.new("{/blred}").closing
+        assert_equal true, TTYHue::Parser::ColorTag.new("{/blred}").bg
       end
 
       should "resolve gui colors" do
-        assert_equal :gui_123, TTYHue::Parser::Tag.new("{bgui123}").color_name
-        assert_equal false, TTYHue::Parser::Tag.new("{bgui123}").closing
-        assert_equal true, TTYHue::Parser::Tag.new("{bgui123}").bg
-        assert_equal :gui_123, TTYHue::Parser::Tag.new("{/bgui123}").color_name
-        assert_equal true, TTYHue::Parser::Tag.new("{/bgui123}").closing
-        assert_equal true, TTYHue::Parser::Tag.new("{/bgui123}").bg
+        assert_equal :gui_123, TTYHue::Parser::ColorTag.new("{bgui123}").color_name
+        assert_equal false, TTYHue::Parser::ColorTag.new("{bgui123}").closing
+        assert_equal true, TTYHue::Parser::ColorTag.new("{bgui123}").bg
+        assert_equal :gui_123, TTYHue::Parser::ColorTag.new("{/bgui123}").color_name
+        assert_equal true, TTYHue::Parser::ColorTag.new("{/bgui123}").closing
+        assert_equal true, TTYHue::Parser::ColorTag.new("{/bgui123}").bg
       end
 
     end
@@ -314,8 +308,7 @@ describe TTYHue::Parser do
       assert_parsed(
         "This is {/red}red",
         [
-          {fg: :default, bg: :default, str: "This is "},
-          {fg: :default, bg: :default, str: "red"}
+          {fg: :default, bg: :default, str: "This is red"},
         ]
       )
     end
@@ -326,10 +319,74 @@ describe TTYHue::Parser do
         [
           {fg: :blue, bg: :default, str: "Overflowing blue "},
           {fg: :red, bg: :default, str: "now red with "},
-          {fg: :green, bg: :default, str: "some green"},
-          {fg: :green, bg: :default, str: " and green"},
+          {fg: :green, bg: :default, str: "some green and green"},
           {fg: :blue, bg: :default, str: " and blue"}
         ]
+      )
+    end
+
+  end
+
+  context "styles" do
+
+    should "ignore styles when no styles defined" do
+      assert_parsed(
+        "{header}This is header{/header} and this is {footer}footer{/footer}",
+        [
+          {fg: :default, bg: :default, str: "{header}This is header{/header} and this is {footer}footer{/footer}"}
+        ]
+      )
+    end
+
+    should "use styles when styles defined" do
+      assert_parsed(
+        "{header}This is header{/header} and this is {footer}footer{/footer}",
+        [
+          {fg: :red, bg: :default, str: "This is header"},
+          {fg: :default, bg: :default, str: " and this is "},
+          {fg: :blue, bg: :default, str: "footer"}
+        ],
+        {
+          header: {fg: :red},
+          footer: {fg: :blue}
+        }
+      )
+    end
+
+    should "allow applying both fg and bg styles" do
+      assert_parsed(
+        "{header}This is header{/header}",
+        [
+          {fg: :blue, bg: :red, str: "This is header"}
+        ],
+        {
+          header: {fg: :blue, bg: :red}
+        }
+      )
+    end
+
+    should "allow using global styles" do
+      TTYHue.set_style(header: {fg: :blue})
+      assert_parsed(
+        "{header}This is header{/header}",
+        [
+          {fg: :blue, bg: :default, str: "This is header"}
+        ]
+      )
+    end
+
+    should "allow using both global and local styles" do
+      TTYHue.set_style(header: {fg: :red})
+      assert_parsed(
+        "{header}This is header{/header} and this is {footer}footer{/footer}",
+        [
+          {fg: :red, bg: :default, str: "This is header"},
+          {fg: :default, bg: :default, str: " and this is "},
+          {fg: :blue, bg: :default, str: "footer"}
+        ],
+        {
+          footer: {fg: :blue}
+        }
       )
     end
 

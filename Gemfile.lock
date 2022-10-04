@@ -1,3 +1,8 @@
+PATH
+  remote: .
+  specs:
+    ttyhue (0.1.0)
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -9,6 +14,7 @@ GEM
       builder
       minitest (>= 5.0)
       ruby-progressbar
+    rake (13.0.6)
     ruby-progressbar (1.11.0)
     shoulda-context (2.0.0)
 
@@ -18,7 +24,9 @@ PLATFORMS
 DEPENDENCIES
   minitest (= 5.16.3)
   minitest-reporters (= 1.5.0)
+  rake (~> 13.0)
   shoulda-context (= 2.0.0)
+  ttyhue!
 
 BUNDLED WITH
    2.2.22

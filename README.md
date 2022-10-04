@@ -73,11 +73,20 @@ TTYHue.c "{header}Title{/header}\n{content}Content{/content}\n{footer}Footer{/fo
 ```
 ## Contributing
 
+### Workflow
+
 1. Fork it ( https://github.com/railis/ttyhue/fork )
 2. Create your feature branch (`git checkout -b new_feature`)
 3. Commit your changes (`git commit -am 'Commit feature'`)
 4. Push to the branch (`git push origin new_feature`)
 5. Create a new Pull Request
+
+### Running tests
+
+```bash
+$ bundle install
+$ rake test
+```
 
 ## Copyright
 

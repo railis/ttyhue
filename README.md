@@ -37,7 +37,7 @@ All possible options can be listed by:
 
 ### GUI colors
 
-It's also possible to use term color codes (0-255) directly by prefixing te corresponding code with `gui`.
+`TTYHue` also supports term color codes (0-255) directly by prefixing the corresponding code with `gui`.
 
 ```ruby
 TTYHue.c "This is {gui123}foreground{gui123} and {bgui123}background{/bgui123}"
@@ -50,7 +50,7 @@ TTYHue.preview_guicolors
 
 ### Custom styles
 
-In order to improve readability and provide a way to DRY-ing-up the it is possible to wrap the colors into custom styles.
+In order to improve readability, color codes can be wrapped into custom styles.
 
 ```ruby
 TTYHUe.c(
@@ -81,4 +81,4 @@ TTYHue.c "{header}Title{/header}\n{content}Content{/content}\n{footer}Footer{/fo
 
 ## Copyright
 
-Copyright (c) 2022 Dominik. See LICENSE for further details.
+Copyright (c) 2022 Dominik Sito. See LICENSE for further details.

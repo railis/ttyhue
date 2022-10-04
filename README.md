@@ -56,7 +56,7 @@ In order to improve readability, color codes can be wrapped into custom styles.
 TTYHUe.c(
   "{header}Title{/header}\n{content}Content{/content}\n{footer}Footer{/footer}",
   header: {fg: :blue},
-  content: {fg: :light_gray, bg: :gui234},
+  content: {fg: :lgray, bg: :gui234},
   footer: {fg: :gui252}
 )
 ```
@@ -65,7 +65,7 @@ Custom styles can be set globally as well.
 ```ruby
 TTYHue.set_style(
   header: {fg: :blue},
-  content: {fg: :light_gray, bg: :gui234},
+  content: {fg: :lgray, bg: :gui234},
   footer: {fg: :gui252}
 )
 

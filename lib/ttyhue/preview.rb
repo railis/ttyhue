@@ -13,6 +13,7 @@ module TTYHue
           end
           print "\n"
         end
+        nil
       end
 
       def preview_guicolors
@@ -22,6 +23,7 @@ module TTYHue
           print TTYHue.c(" {#{tag_name}}#{num.to_s.ljust(3)}{/#{tag_name}}")
           print "\n" if x % 16 == 0
         end
+        nil
       end
 
     end

@@ -33,7 +33,7 @@ All possible options can be listed by:
 ```ruby
     TTYHue.preview_termcolors
 ```
-![screenshot](https://raw.githubusercontent.com/railis/ttyhue/master/examples/termcolors.png)
+![screenshot](https://raw.githubusercontent.com/railis/ttyhue/master/examples/term_colors.png)
 
 ### GUI colors
 
@@ -46,7 +46,7 @@ The absolute list of color codes can be previewed by typing:
 ```ruby
 TTYHue.preview_guicolors
 ```
-![screenshot](https://raw.githubusercontent.com/railis/ttyhue/master/examples/guicolors.png)
+![screenshot](https://raw.githubusercontent.com/railis/ttyhue/master/examples/gui_colors.png)
 
 ### Custom styles
 

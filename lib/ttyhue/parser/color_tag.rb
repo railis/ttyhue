@@ -6,8 +6,6 @@ module TTYHue
         /{(?<closing>\/?)(?<bg>b?)(?<name>#{TermColor.defs.map(&:tag_name).join("|")})}/
       end
 
-      attr_reader :color_name, :bg
-
       def bg
         @match_data[:bg] != ""
       end

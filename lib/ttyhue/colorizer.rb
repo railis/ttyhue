@@ -3,8 +3,8 @@ module TTYHue
 
     class << self
 
-      def colorize(str)
-        Parser.new(str).parse.map do |parsed_section|
+      def colorize(str, styles)
+        Parser.new(str, styles).parse.map do |parsed_section|
           colorized_section(parsed_section)
         end.join
       end

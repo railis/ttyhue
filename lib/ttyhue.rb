@@ -17,8 +17,8 @@ module TTYHue
     @@styles = hash.to_h
   end
 
-  def self.c(str)
-    TTYHue::Colorizer.colorize(str)
+  def self.c(str, styles = {})
+    TTYHue::Colorizer.colorize(str, styles)
   end
 
   def self.preview_termcolors

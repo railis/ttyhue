@@ -7,7 +7,8 @@ module TTYHue
 
     TOKENS = {
       tag: /{[^{}]+}/,
-      content: /[^{]+/
+      content: /[^{]+/,
+      unclosed_tag: /{[^{]*/
     }
 
     class ParseError < StandardError; end
@@ -23,7 +24,10 @@ module TTYHue
       scanner = StringScanner.new(@string)
       until scanner.eos?
         next if handle_content!(scanner.scan(TOKENS[:content]))
-        next if handle_tag!(scanner.scan(TOKENS[:tag]))
+        while str = scanner.scan(TOKENS[:tag])
+          handle_tag!(str)
+        end
+        next if handle_content!(scanner.scan(TOKENS[:unclosed_tag]))
       end
       flattened_result
     end

@@ -392,4 +392,30 @@ describe TTYHue::Parser do
 
   end
 
+  context "corner cases" do
+
+    should "handle solo tag opening gracefully" do
+      assert_parsed(
+        "Some {red}red{/red} some { and some {blue}blue{/blue}",
+        [
+          {fg: :default, bg: :default, str: "Some "},
+          {fg: :red, bg: :default, str: "red"},
+          {fg: :default, bg: :default, str: " some { and some "},
+          {fg: :blue, bg: :default, str: "blue"}
+        ]
+      )
+    end
+
+    should "handle nested tags" do
+      assert_parsed(
+        "Some {green}{blue}{cyan}{red}red{/red}{/cyan}{/blue}{/green}",
+        [
+          {fg: :default, bg: :default, str: "Some "},
+          {fg: :red, bg: :default, str: "red"}
+        ]
+      )
+    end
+
+  end
+
 end
